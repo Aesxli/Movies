@@ -1,8 +1,11 @@
 package sg.edu.rp.c346.id22012205.movies;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -12,6 +15,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.amrdeveloper.lottiedialog.LottieDialog;
+
 public class ModifyMovie extends AppCompatActivity {
     TextView movieID;
     EditText etMovieTitle, etGenre, etYear;
@@ -20,6 +25,8 @@ public class ModifyMovie extends AppCompatActivity {
     Movie data;
     String[] ratings = {"G", "PG", "PG13", "NC16", "M18", "R21"};
     int selectedRatingPosition = -1;
+
+    LottieDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,17 +99,108 @@ public class ModifyMovie extends AppCompatActivity {
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DBHelper dbh = new DBHelper(ModifyMovie.this);
-                dbh.deleteMovie(data.getId());
-                Intent i = new Intent(ModifyMovie.this, ShowMovies.class);
-                startActivity(i);
+               /* AlertDialog.Builder myBuilder=new AlertDialog.Builder(ModifyMovie.this);
+                //Set the dialog details
+                myBuilder.setTitle("Danger");
+                myBuilder.setMessage("Are you sure you want to delete the movie "+etMovieTitle.getText().toString());
+                myBuilder.setCancelable(false);
+                myBuilder.setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        DBHelper dbh = new DBHelper(ModifyMovie.this);
+                        dbh.deleteMovie(data.getId());
+                        Intent i = new Intent(ModifyMovie.this, ShowMovies.class);
+                        startActivity(i);
+                    }
+                });
+                myBuilder.setPositiveButton("CANCEL",null);
+                AlertDialog myDialog=myBuilder.create();
+                myDialog.show();*/
+                Button okButton = new Button(ModifyMovie.this);
+                okButton.setText("DELETE");
+                okButton.setOnClickListener(view -> {
+                    DBHelper dbh = new DBHelper(ModifyMovie.this);
+                    dbh.deleteMovie(data.getId());
+                    Intent i = new Intent(ModifyMovie.this, ShowMovies.class);
+                    startActivity(i);
+                    dialog.cancel();
+                    finish();
+                });
+
+                Button cancelButton = new Button(ModifyMovie.this);
+                cancelButton.setText("CANCEL");
+                cancelButton.setOnClickListener(view -> {
+                    dialog.cancel();
+                });
+
+                 dialog = new LottieDialog(ModifyMovie.this)
+                        .setAnimation(R.raw.a)
+                        .setAnimationRepeatCount(LottieDialog.INFINITE)
+                        .setAutoPlayAnimation(true)
+                        .setTitle("DANGER")
+                        .setTitleColor(Color.RED)
+                        .setMessage("Are you sure you want to delete the movie "+etMovieTitle.getText().toString())
+                        .setMessageColor(Color.BLACK)
+                        .setDialogBackground(Color.WHITE)
+                        .setCancelable(false)
+                        .addActionButton(okButton)
+                        .addActionButton(cancelButton)
+                        .setOnShowListener(dialogInterface -> {})
+                        .setOnDismissListener(dialogInterface -> {})
+                        .setOnCancelListener(dialogInterface -> {});
+                dialog.show();
             }
         });
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                /*AlertDialog.Builder myBuilder=new AlertDialog.Builder(ModifyMovie.this);
+                //Set the dialog details
+
+                myBuilder.setTitle("Danger");
+                myBuilder.setMessage("Are you sure you want to discard changes?");
+                myBuilder.setCancelable(false);
+                myBuilder.setNegativeButton("DISCARD", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                      finish();
+                    }
+                });
+                myBuilder.setPositiveButton("DO NOT DISCARD",null);
+                AlertDialog myDialog=myBuilder.create();*/
+
+
+                Button okButton = new Button(ModifyMovie.this);
+                okButton.setText("DISCARD");
+                okButton.setOnClickListener(view -> {
+                    dialog.cancel();
+                    finish();
+                });
+
+                Button cancelButton = new Button(ModifyMovie.this);
+                cancelButton.setText("DO NOT DISCARD");
+                cancelButton.setOnClickListener(view -> {
+                    dialog.cancel();
+                });
+
+                dialog = new LottieDialog(ModifyMovie.this)
+                        .setAnimation(R.raw.d)
+                        .setAnimationRepeatCount(LottieDialog.INFINITE)
+                        .setAutoPlayAnimation(true)
+                        .setTitle("Danger")
+                        .setTitleColor(Color.RED)
+                        .setMessage("Are you sure you want to discard changes?")
+                        .setMessageColor(Color.WHITE)
+                        .setDialogBackground(Color.BLACK)
+                        .setCancelable(false)
+                        .addActionButton(okButton)
+                        .addActionButton(cancelButton)
+                        .setOnShowListener(dialogInterface -> {})
+                        .setOnDismissListener(dialogInterface -> {})
+                        .setOnCancelListener(dialogInterface -> {});
+                dialog.show();
+
             }
         });
     }
